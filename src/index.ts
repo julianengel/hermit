@@ -1,11 +1,9 @@
 import { Client } from "@buape/carbon"
 import { GatewayIntents, GatewayPlugin } from "@buape/carbon/gateway"
-import { createServer } from "@buape/carbon/adapters/bun"
 import GithubCommand from "./commands/github.js"
 import AnswerOverflowCommand from "./commands/answeroverflow.js"
 import GotoRootCommand from "./commands/goto.js"
 import RoleCommand from "./commands/role.js"
-import ApplicationAuthorized from "./events/authorized.js"
 import AutoModerationActionExecution from "./events/autoModerationActionExecution.js"
 import AutoPublishMessageCreate from "./events/autoPublishMessageCreate.js"
 import Ready from "./events/ready.js"
@@ -40,7 +38,6 @@ const client = new Client(
 			new RoleCommand()
 		],
 		listeners: [
-			new ApplicationAuthorized(),
 			new AutoModerationActionExecution(),
 			new AutoPublishMessageCreate(),
 			new Ready()
@@ -48,8 +45,6 @@ const client = new Client(
 	},
 	[gateway]
 )
-
-createServer(client, { port: 3000 })
 
 declare global {
 	namespace NodeJS {
