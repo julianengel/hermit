@@ -4,6 +4,7 @@ import { createServer } from "@buape/carbon/adapters/bun"
 import GithubCommand from "./commands/github.js"
 import AnswerOverflowCommand from "./commands/answeroverflow.js"
 import GotoRootCommand from "./commands/goto.js"
+import RoleCommand from "./commands/role.js"
 import ApplicationAuthorized from "./events/authorized.js"
 import AutoModerationActionExecution from "./events/autoModerationActionExecution.js"
 import AutoPublishMessageCreate from "./events/autoPublishMessageCreate.js"
@@ -35,7 +36,8 @@ const client = new Client(
 		commands: [
 			new GithubCommand(),
 			new AnswerOverflowCommand(),
-			new GotoRootCommand()
+			new GotoRootCommand(),
+			new RoleCommand()
 		],
 		listeners: [
 			new ApplicationAuthorized(),

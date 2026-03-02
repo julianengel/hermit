@@ -6,7 +6,7 @@ export default abstract class GotoCommand extends BaseCommand {
 		{
 			name: "user",
 			description: "User to mention",
-			type: ApplicationCommandOptionType.User
+			type: ApplicationCommandOptionType.User as const,
 		}
 	]
 
