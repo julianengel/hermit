@@ -7,6 +7,7 @@ import HelperRootCommand from "./commands/helper.js"
 import AutoModerationActionExecution from "./events/autoModerationActionExecution.js"
 import AutoPublishMessageCreate from "./events/autoPublishMessageCreate.js"
 import Ready from "./events/ready.js"
+import ThreadCreateWelcome from "./events/threadCreateWelcome.js"
 
 const gateway = new GatewayPlugin({
 	intents:
@@ -40,6 +41,7 @@ const client = new Client(
 		listeners: [
 			new AutoModerationActionExecution(),
 			new AutoPublishMessageCreate(),
+			new ThreadCreateWelcome(),
 			new Ready()
 		],
 	},
@@ -56,6 +58,8 @@ declare global {
 			DISCORD_BOT_TOKEN: string;
 			HELPER_COMMAND_WEBHOOK_URL?: string;
 			HELPER_COMMAND_WEBHOOK_SECRET?: string;
+			HELPER_THREAD_WELCOME_PARENT_ID?: string;
+			HELPER_THREAD_WELCOME_TEMPLATE?: string;
 		}
 	}
 }

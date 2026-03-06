@@ -15,6 +15,8 @@ DISCORD_PUBLIC_KEY="discord-public-key"
 DISCORD_BOT_TOKEN="your-bot-token"
 HELPER_COMMAND_WEBHOOK_URL="https://your-worker.example.workers.dev"
 HELPER_COMMAND_WEBHOOK_SECRET="your-shared-secret"
+HELPER_THREAD_WELCOME_PARENT_ID="123456789012345678"
+HELPER_THREAD_WELCOME_TEMPLATE="Welcome to helpers. Please include expected vs actual behavior, what you already tried, and relevant logs/code."
 ```
 
 2. Install dependencies:
@@ -34,6 +36,8 @@ bun run dev
 - `/helper close-thread` - Post a close notice and archive/lock the current thread
 
 If `HELPER_COMMAND_WEBHOOK_SECRET` is set, Hermit sends it as the `x-helper-webhook-secret` header on helper webhook requests.
+
+Hermit sends a welcome message for every newly created thread under the configured helper parent channel (`HELPER_THREAD_WELCOME_PARENT_ID`).
 
 ## Gateway Events
 
