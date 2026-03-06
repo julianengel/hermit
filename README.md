@@ -33,6 +33,7 @@ bun run dev
 
 - `/github` - Look up an issue or PR (defaults to openclaw/hermit)
 - `/helper warn-new-thread` - Post a helper-channel warning for long threads
+- `/helper close` - Post a close notice and archive/lock the current thread
 - `/helper close-thread` - Post a close notice and archive/lock the current thread
 
 If `HELPER_COMMAND_WEBHOOK_SECRET` is set, Hermit sends it as the `x-helper-webhook-secret` header on helper webhook requests.

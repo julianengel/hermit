@@ -72,8 +72,27 @@ class HelperCloseThreadCommand extends BaseCommand {
 	contexts = [InteractionContextType.Guild]
 
 	async run(interaction: CommandInteraction) {
+		await closeHelperThread(interaction, "/helper close-thread")
+	}
+}
+
+class HelperCloseCommand extends BaseCommand {
+	name = "close"
+	description = "Close and lock the current thread"
+	integrationTypes = [ApplicationIntegrationType.GuildInstall]
+	contexts = [InteractionContextType.Guild]
+
+	async run(interaction: CommandInteraction) {
+		await closeHelperThread(interaction, "/helper close")
+	}
+}
+
+const closeHelperThread = async (
+	interaction: CommandInteraction,
+	commandName: string
+) => {
 		const channel = interaction.channel
-		await sendCommandWebhook(interaction, "/helper close-thread")
+		await sendCommandWebhook(interaction, commandName)
 
 		if (!isThreadLikeChannel(channel)) {
 			await interaction.reply({
@@ -92,7 +111,6 @@ class HelperCloseThreadCommand extends BaseCommand {
 
 		await channel.archive()
 		await channel.lock()
-	}
 }
 
 export default class HelperRootCommand extends CommandWithSubcommands {
@@ -100,5 +118,9 @@ export default class HelperRootCommand extends CommandWithSubcommands {
 	description = "Helper-channel moderation utilities"
 	integrationTypes = [ApplicationIntegrationType.GuildInstall]
 	contexts = [InteractionContextType.Guild]
-	subcommands = [new HelperWarnNewThreadCommand(), new HelperCloseThreadCommand()]
+	subcommands = [
+		new HelperWarnNewThreadCommand(),
+		new HelperCloseCommand(),
+		new HelperCloseThreadCommand()
+	]
 }
