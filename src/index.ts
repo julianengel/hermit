@@ -55,6 +55,7 @@ declare global {
 			DISCORD_PUBLIC_KEY: string;
 			DISCORD_BOT_TOKEN: string;
 			HELPER_COMMAND_WEBHOOK_URL?: string;
+			HELPER_COMMAND_WEBHOOK_SECRET?: string;
 		}
 	}
 }

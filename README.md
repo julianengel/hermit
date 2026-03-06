@@ -14,6 +14,7 @@ DISCORD_CLIENT_ID="your-client-id"
 DISCORD_PUBLIC_KEY="discord-public-key"
 DISCORD_BOT_TOKEN="your-bot-token"
 HELPER_COMMAND_WEBHOOK_URL="https://your-worker.example.workers.dev"
+HELPER_COMMAND_WEBHOOK_SECRET="your-shared-secret"
 ```
 
 2. Install dependencies:
@@ -31,6 +32,8 @@ bun run dev
 - `/github` - Look up an issue or PR (defaults to openclaw/hermit)
 - `/helper warn-new-thread` - Post a helper-channel warning for long threads
 - `/helper close-thread` - Post a close notice and archive/lock the current thread
+
+If `HELPER_COMMAND_WEBHOOK_SECRET` is set, Hermit sends it as the `x-helper-webhook-secret` header on helper webhook requests.
 
 ## Gateway Events
 

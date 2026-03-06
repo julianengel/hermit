@@ -23,6 +23,7 @@ export const sendCommandWebhook = async (
 	command: string
 ) => {
 	const workerUrl = process.env.HELPER_COMMAND_WEBHOOK_URL
+	const webhookSecret = process.env.HELPER_COMMAND_WEBHOOK_SECRET
 	if (!workerUrl) {
 		return
 	}
@@ -47,7 +48,10 @@ export const sendCommandWebhook = async (
 		await fetch(workerUrl, {
 			method: "POST",
 			headers: {
-				"content-type": "application/json"
+				"content-type": "application/json",
+				...(webhookSecret
+					? { "x-helper-webhook-secret": webhookSecret }
+					: {})
 			},
 			body: JSON.stringify(payload)
 		})
