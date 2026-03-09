@@ -64,6 +64,7 @@ declare global {
 			WORKER_EVENT_SECRET?: string;
 			HELPER_THREAD_WELCOME_PARENT_ID?: string;
 			HELPER_THREAD_WELCOME_TEMPLATE?: string;
+			THREAD_LENGTH_CHECK_INTERVAL_HOURS?: string;
 		}
 	}
 }

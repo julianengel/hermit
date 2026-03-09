@@ -19,6 +19,7 @@ WORKER_EVENT_URL="https://your-worker.example.workers.dev"
 WORKER_EVENT_SECRET="your-shared-secret"
 HELPER_THREAD_WELCOME_PARENT_ID="123456789012345678"
 HELPER_THREAD_WELCOME_TEMPLATE="Welcome to helpers. Please include expected vs actual behavior, what you already tried, and relevant logs/code."
+THREAD_LENGTH_CHECK_INTERVAL_HOURS="2"
 ```
 
 2. Install dependencies:
@@ -42,6 +43,46 @@ bun run dev
 If `WORKER_EVENT_SECRET` is set, Hermit sends it as the `x-worker-event-secret` header on worker event requests.
 
 Hermit sends a welcome message for every newly created thread under the configured helper parent channel (`HELPER_THREAD_WELCOME_PARENT_ID`).
+
+Hermit also registers those welcome threads in the worker's tracked-thread API before posting the welcome message. Registration failures are logged but do not block the Discord welcome message.
+
+## Thread Length Monitoring
+
+Hermit owns the thread-length policy. The worker only stores tracked-thread state.
+
+When `THREAD_LENGTH_CHECK_INTERVAL_HOURS` is set to a positive number, Hermit starts a background polling loop on startup that:
+
+- requests active tracked threads from the worker
+- fetches each Discord thread directly
+- checks whether the thread is already archived or locked
+- sends warning messages or auto-closes the thread based on live Discord message counts
+- writes the latest thread state back to the worker
+
+Thresholds:
+
+- more than `100` messages: first warning
+- more than `150` messages: second warning asking users to close solved threads and move new issues to a new thread
+- more than `200` messages: automatic close notice, then archive + lock
+
+Messages are stored in git-tracked files:
+
+- `src/config/threadLengthMessages.ts`
+
+Hermit tracks the following worker fields for each thread:
+
+- `threadId`
+- `createdAt`
+- `lastChecked`
+- `solved`
+- `warningLevel`
+- `closed`
+- `lastMessageCount`
+
+Notes:
+
+- If `THREAD_LENGTH_CHECK_INTERVAL_HOURS` is unset, the poller stays disabled.
+- Threads that are already archived or locked are marked as closed in worker state and skipped on future passes.
+- The worker URL is derived from `WORKER_EVENT_URL`, so the same base worker configuration is used for event logging and tracked-thread reads/writes.
 
 ## Gateway Events
 

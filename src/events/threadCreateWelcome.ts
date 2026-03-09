@@ -5,6 +5,7 @@ import {
 	TextDisplay,
 	ThreadCreateListener
 } from "@buape/carbon"
+import { upsertTrackedThread } from "../utils/trackedThreads.js"
 import { postWorkerEvent } from "../utils/workerEvent.js"
 
 const defaultWelcomeTemplate =
@@ -38,22 +39,43 @@ export default class ThreadCreateWelcome extends ThreadCreateListener {
 		const template =
 			process.env.HELPER_THREAD_WELCOME_TEMPLATE ?? defaultWelcomeTemplate
 
-		await postWorkerEvent({
-			type: "thread_welcome_created",
-			invokedBy: {
-				id: null,
-				username: null,
-				globalName: null
-			},
-			context: {
-				guildId: thread.guildId ?? null,
-				channelId: parentId,
+		const createdAt = thread.createTimestamp ?? new Date().toISOString()
+		const initialMessageCount =
+			thread.totalMessageSent ?? thread.messageCount ?? null
+
+		const workerEventResult = await Promise.allSettled([
+			postWorkerEvent({
+				type: "thread_welcome_created",
+				invokedBy: {
+					id: null,
+					username: null,
+					globalName: null
+				},
+				context: {
+					guildId: thread.guildId ?? null,
+					channelId: parentId,
+					threadId: thread.id,
+					messageCount: initialMessageCount,
+					parentId
+				},
+				data: {}
+			}),
+			upsertTrackedThread({
 				threadId: thread.id,
-				messageCount: null,
-				parentId
-			},
-			data: {}
-		})
+				createdAt,
+				lastChecked: null,
+				solved: false,
+				warningLevel: 0,
+				closed: false,
+				lastMessageCount: initialMessageCount
+			})
+		])
+
+		for (const result of workerEventResult) {
+			if (result.status === "rejected") {
+				console.error("Failed to register tracked helper thread:", result.reason)
+			}
+		}
 
 		try {
 			await thread.send({
