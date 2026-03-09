@@ -12,7 +12,7 @@ import BaseCommand from "./base.js"
 import { sendCommandWebhook } from "../utils/commandWebhook.js"
 
 const warnNewThreadMessage =
-	"This thread is getting very long and answers may not be accurate due to the large context. Please start a new thread for any different problems/topics. @Krill 🦐 please sum up the answer to the initial message and the conversation briefly. This thread will be closed soon."
+	"This thread is getting very long and answers may not be accurate due to the large context. Please start a new thread for any different problems/topics. <@1457407575476801641> please sum up the answer to the initial message and the conversation briefly. This thread will be closed soon."
 const closeThreadMessage =
 	"This thread has gotten very long and spanned multiple topics which will make future reading difficult. This thread is now closed. Please create a new thread for any new topics."
 

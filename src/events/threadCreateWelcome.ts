@@ -9,23 +9,16 @@ import {
 const defaultWelcomeTemplate =
 	`Welcome to the help channel!
 
-Krill cannot see your system — it only knows what you tell it. The more details you include, the easier it is to help.
-
-If you haven’t included it yet, please consider sending:
-
-What you’re trying to do (goal / expected behaviour)
-
-What happened instead (exact error message)
-
-What you ran or clicked (commands, config snippet, etc.)
-
-Your environment (OS, install method, versions)
-
-Relevant logs (the smallest useful snippet)
+<@1457407575476801641> cannot see your system — it only knows what you tell it. The more details you include, the easier it is to help. If you haven’t included it yet, please consider sending:
+- What you’re trying to do (goal / expected behaviour)
+- What happened instead (exact error message)
+- What you ran or clicked (commands, config snippet, etc.)
+- Your environment (OS, install method, versions)
+- Relevant logs (the smallest useful snippet)
 
 Posts like “it doesn’t work” without details are very hard to debug.
 
-If new issues arise, please open a new thread/topic instead of continuing in this one. Keeping one issue per thread helps ensure answers stay accurate and makes it easier for others to find solutions later.`
+If new issues arise, please open a new thread instead of continuing here — one issue per thread helps keep answers accurate and searchable.`
 
 export default class ThreadCreateWelcome extends ThreadCreateListener {
 	async handle(data: ListenerEventData[this["type"]], _client: Client) {
