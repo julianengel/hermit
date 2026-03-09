@@ -9,7 +9,7 @@ import {
 	TextDisplay
 } from "@buape/carbon"
 import BaseCommand from "./base.js"
-import { sendCommandWebhook } from "../utils/commandWebhook.js"
+import { sendWorkerEvent } from "../utils/workerEvent.js"
 
 const warnNewThreadMessage =
 	"This thread is getting very long and answers may not be accurate due to the large context. Please start a new thread for any different problems/topics. <@1457407575476801641> please sum up the answer to the initial message and the conversation briefly. This thread will be closed soon."
@@ -39,7 +39,9 @@ class HelperWarnNewThreadCommand extends BaseCommand {
 	]
 
 	async run(interaction: CommandInteraction) {
-		await sendCommandWebhook(interaction, "/helper warn-new-thread")
+		await sendWorkerEvent(interaction, "helper_command", {
+			command: "/helper warn-new-thread"
+		})
 		const user = interaction.options.getUser("user")
 		const message = user
 			? `${this.formatMention(user.id)}${this.lowercaseFirstLetter(warnNewThreadMessage)}`
@@ -92,7 +94,9 @@ const closeHelperThread = async (
 	commandName: string
 ) => {
 		const channel = interaction.channel
-		await sendCommandWebhook(interaction, commandName)
+		await sendWorkerEvent(interaction, "helper_command", {
+			command: commandName
+		})
 
 		if (!isThreadLikeChannel(channel)) {
 			await interaction.reply({

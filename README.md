@@ -13,8 +13,10 @@ DEPLOY_SECRET="your-deploy-secret"
 DISCORD_CLIENT_ID="your-client-id"
 DISCORD_PUBLIC_KEY="discord-public-key"
 DISCORD_BOT_TOKEN="your-bot-token"
-HELPER_COMMAND_WEBHOOK_URL="https://your-worker.example.workers.dev"
-HELPER_COMMAND_WEBHOOK_SECRET="your-shared-secret"
+ANSWER_OVERFLOW_API_KEY="your-answer-overflow-api-key"
+ANSWER_OVERFLOW_API_BASE_URL="https://www.answeroverflow.com"
+WORKER_EVENT_URL="https://your-worker.example.workers.dev"
+WORKER_EVENT_SECRET="your-shared-secret"
 HELPER_THREAD_WELCOME_PARENT_ID="123456789012345678"
 HELPER_THREAD_WELCOME_TEMPLATE="Welcome to helpers. Please include expected vs actual behavior, what you already tried, and relevant logs/code."
 ```
@@ -32,11 +34,12 @@ bun run dev
 ## Commands
 
 - `/github` - Look up an issue or PR (defaults to openclaw/hermit)
+- `Solved (Mod)` - Moderator-only message context menu item that marks the current thread as solved in Answer Overflow
 - `/helper warn-new-thread` - Post a helper-channel warning for long threads
 - `/helper close` - Post a close notice and archive/lock the current thread
 - `/helper close-thread` - Post a close notice and archive/lock the current thread
 
-If `HELPER_COMMAND_WEBHOOK_SECRET` is set, Hermit sends it as the `x-helper-webhook-secret` header on helper webhook requests.
+If `WORKER_EVENT_SECRET` is set, Hermit sends it as the `x-worker-event-secret` header on worker event requests.
 
 Hermit sends a welcome message for every newly created thread under the configured helper parent channel (`HELPER_THREAD_WELCOME_PARENT_ID`).
 

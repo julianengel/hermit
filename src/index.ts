@@ -1,6 +1,7 @@
 import { Client } from "@buape/carbon"
 import { GatewayIntents, GatewayPlugin } from "@buape/carbon/gateway"
 import GithubCommand from "./commands/github.js"
+import SolvedModCommand from "./commands/solvedMod.js"
 import SayRootCommand from "./commands/say.js"
 import RoleCommand from "./commands/role.js"
 import HelperRootCommand from "./commands/helper.js"
@@ -34,6 +35,7 @@ const client = new Client(
 	{
 		commands: [
 			new GithubCommand(),
+			new SolvedModCommand(),
 			new SayRootCommand(),
 			new RoleCommand(),
 			new HelperRootCommand()
@@ -56,8 +58,10 @@ declare global {
 			DISCORD_CLIENT_ID: string;
 			DISCORD_PUBLIC_KEY: string;
 			DISCORD_BOT_TOKEN: string;
-			HELPER_COMMAND_WEBHOOK_URL?: string;
-			HELPER_COMMAND_WEBHOOK_SECRET?: string;
+			ANSWER_OVERFLOW_API_KEY?: string;
+			ANSWER_OVERFLOW_API_BASE_URL?: string;
+			WORKER_EVENT_URL?: string;
+			WORKER_EVENT_SECRET?: string;
 			HELPER_THREAD_WELCOME_PARENT_ID?: string;
 			HELPER_THREAD_WELCOME_TEMPLATE?: string;
 		}
