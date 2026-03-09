@@ -5,6 +5,7 @@ import {
 	TextDisplay,
 	ThreadCreateListener
 } from "@buape/carbon"
+import { postWorkerEvent } from "../utils/workerEvent.js"
 
 const defaultWelcomeTemplate =
 	`Welcome to the help channel!
@@ -36,6 +37,23 @@ export default class ThreadCreateWelcome extends ThreadCreateListener {
 
 		const template =
 			process.env.HELPER_THREAD_WELCOME_TEMPLATE ?? defaultWelcomeTemplate
+
+		await postWorkerEvent({
+			type: "thread_welcome_created",
+			invokedBy: {
+				id: null,
+				username: null,
+				globalName: null
+			},
+			context: {
+				guildId: thread.guildId ?? null,
+				channelId: parentId,
+				threadId: thread.id,
+				messageCount: null,
+				parentId
+			},
+			data: {}
+		})
 
 		try {
 			await thread.send({
