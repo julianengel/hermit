@@ -1,4 +1,5 @@
 import type { CommandInteraction } from "@buape/carbon"
+import { insertEvent, normalizeEventPayload } from "../data/helperLogs.js"
 
 type ThreadStatsChannel = {
 	id?: string
@@ -41,12 +42,6 @@ export const postWorkerEvent = async <TData>({
 	context,
 	data
 }: SendWorkerEventInput<TData>) => {
-	const workerUrl = process.env.WORKER_EVENT_URL
-	const workerSecret = process.env.WORKER_EVENT_SECRET
-	if (!workerUrl) {
-		return
-	}
-
 	const payload: WorkerEventPayload<TData> = {
 		type,
 		time: new Date().toISOString(),
@@ -56,16 +51,14 @@ export const postWorkerEvent = async <TData>({
 	}
 
 	try {
-		await fetch(workerUrl, {
-			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				...(workerSecret ? { "x-worker-event-secret": workerSecret } : {})
-			},
-			body: JSON.stringify(payload)
-		})
+		const normalizedEvent = normalizeEventPayload(payload)
+		if (!normalizedEvent) {
+			return
+		}
+
+		await insertEvent(normalizedEvent)
 	} catch {
-		// Ignore worker event failures so primary flows can continue.
+		// Ignore event persistence failures so primary flows can continue.
 	}
 }
 

@@ -9,6 +9,9 @@ import AutoModerationActionExecution from "./events/autoModerationActionExecutio
 import AutoPublishMessageCreate from "./events/autoPublishMessageCreate.js"
 import Ready from "./events/ready.js"
 import ThreadCreateWelcome from "./events/threadCreateWelcome.js"
+import { startHelperLogsServer } from "./server/helperLogsServer.js"
+
+startHelperLogsServer()
 
 const gateway = new GatewayPlugin({
 	intents:
@@ -60,11 +63,13 @@ declare global {
 			DISCORD_BOT_TOKEN: string;
 			ANSWER_OVERFLOW_API_KEY?: string;
 			ANSWER_OVERFLOW_API_BASE_URL?: string;
-			WORKER_EVENT_URL?: string;
-			WORKER_EVENT_SECRET?: string;
 			HELPER_THREAD_WELCOME_PARENT_ID?: string;
 			HELPER_THREAD_WELCOME_TEMPLATE?: string;
 			THREAD_LENGTH_CHECK_INTERVAL_HOURS?: string;
+			HELPER_LOGS_HOST?: string;
+			HELPER_LOGS_PORT?: string;
+			DB_PATH?: string;
+			DRIZZLE_MIGRATIONS?: string;
 		}
 	}
 }

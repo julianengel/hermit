@@ -216,13 +216,6 @@ export const startThreadLengthMonitor = (client: Client) => {
 		return
 	}
 
-	if (!process.env.WORKER_EVENT_URL) {
-		console.log(
-			"Thread length monitor disabled because WORKER_EVENT_URL is not configured."
-		)
-		return
-	}
-
 	const run = async () => {
 		if (monitorRunInFlight) {
 			console.log("Skipping thread length monitor pass because the previous pass is still running.")

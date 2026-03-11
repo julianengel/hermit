@@ -15,11 +15,12 @@ DISCORD_PUBLIC_KEY="discord-public-key"
 DISCORD_BOT_TOKEN="your-bot-token"
 ANSWER_OVERFLOW_API_KEY="your-answer-overflow-api-key"
 ANSWER_OVERFLOW_API_BASE_URL="https://www.answeroverflow.com"
-WORKER_EVENT_URL="https://your-worker.example.workers.dev"
-WORKER_EVENT_SECRET="your-shared-secret"
 HELPER_THREAD_WELCOME_PARENT_ID="123456789012345678"
 HELPER_THREAD_WELCOME_TEMPLATE="Welcome to helpers. Please include expected vs actual behavior, what you already tried, and relevant logs/code."
 THREAD_LENGTH_CHECK_INTERVAL_HOURS="2"
+DB_PATH="data/hermit.sqlite"
+HELPER_LOGS_HOST="127.0.0.1"
+HELPER_LOGS_PORT="8787"
 ```
 
 2. Install dependencies:
@@ -27,7 +28,12 @@ THREAD_LENGTH_CHECK_INTERVAL_HOURS="2"
 bun install
 ```
 
-3. Start the development server:
+3. Apply database migrations:
+```bash
+bun run db:migrate
+```
+
+4. Start the development server:
 ```bash
 bun run dev
 ```
@@ -40,23 +46,21 @@ bun run dev
 - `/helper close` - Post a close notice and archive/lock the current thread
 - `/helper close-thread` - Post a close notice and archive/lock the current thread
 
-If `WORKER_EVENT_SECRET` is set, Hermit sends it as the `x-worker-event-secret` header on worker event requests.
-
 Hermit sends a welcome message for every newly created thread under the configured helper parent channel (`HELPER_THREAD_WELCOME_PARENT_ID`).
 
-Hermit also registers those welcome threads in the worker's tracked-thread API before posting the welcome message. Registration failures are logged but do not block the Discord welcome message.
+Hermit also registers those welcome threads directly in SQLite before posting the welcome message. Registration failures are logged but do not block the Discord welcome message.
 
 ## Thread Length Monitoring
 
-Hermit owns the thread-length policy. The worker only stores tracked-thread state.
+Hermit now owns both the thread-length policy and the SQLite persistence layer.
 
 When `THREAD_LENGTH_CHECK_INTERVAL_HOURS` is set to a positive number, Hermit starts a background polling loop on startup that:
 
-- requests active tracked threads from the worker
+- requests active tracked threads from SQLite
 - fetches each Discord thread directly
 - checks whether the thread is already archived or locked
 - sends warning messages or auto-closes the thread based on live Discord message counts
-- writes the latest thread state back to the worker
+- writes the latest thread state back to SQLite
 
 Thresholds:
 
@@ -68,7 +72,7 @@ Messages are stored in git-tracked files:
 
 - `src/config/threadLengthMessages.ts`
 
-Hermit tracks the following worker fields for each thread:
+Hermit tracks the following persisted fields for each thread:
 
 - `threadId`
 - `createdAt`
@@ -81,8 +85,19 @@ Hermit tracks the following worker fields for each thread:
 Notes:
 
 - If `THREAD_LENGTH_CHECK_INTERVAL_HOURS` is unset, the poller stays disabled.
-- Threads that are already archived or locked are marked as closed in worker state and skipped on future passes.
-- The worker URL is derived from `WORKER_EVENT_URL`, so the same base worker configuration is used for event logging and tracked-thread reads/writes.
+- Threads that are already archived or locked are marked as closed in SQLite state and skipped on future passes.
+
+## Helper Logs API
+
+Hermit starts a local Bun HTTP server for the former `helper-logs` functionality. By default it listens on `http://127.0.0.1:8787`.
+
+Available routes:
+
+- `GET /` dashboard UI
+- `GET /api/events` browse normalized event rows
+- `GET /api/threads` browse tracked-thread rows
+
+Set `HELPER_LOGS_PORT=0` to disable the local helper logs server entirely.
 
 ## Gateway Events
 
