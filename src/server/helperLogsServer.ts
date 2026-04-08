@@ -8,10 +8,19 @@ let serverStarted = false
 const asStringOrNull = (value: unknown): string | null =>
 	typeof value === "string" && value.trim().length > 0 ? value.trim() : null
 
+const parseLimit = (rawValue: string | null, fallback = 100) => {
+	const parsed = Number.parseInt(rawValue ?? "", 10)
+	if (!Number.isFinite(parsed)) {
+		return fallback
+	}
+
+	return Math.min(Math.max(Math.trunc(parsed), 1), 500)
+}
+
 const json = (data: unknown, init?: ResponseInit) =>
 	new Response(JSON.stringify(data), {
 		...init,
-	headers: {
+		headers: {
 			"content-type": "application/json; charset=utf-8",
 			...init?.headers
 		}
@@ -388,8 +397,7 @@ export const startHelperLogsServer = () => {
 						invokedBy: asStringOrNull(url.searchParams.get("invokedBy")),
 						from: asStringOrNull(url.searchParams.get("from")),
 						to: asStringOrNull(url.searchParams.get("to")),
-						limit:
-							Number.parseInt(url.searchParams.get("limit") ?? "100", 10) || 100
+						limit: parseLimit(url.searchParams.get("limit"))
 					})
 
 					return json({ count: events.length, events })
@@ -410,8 +418,7 @@ export const startHelperLogsServer = () => {
 								? undefined
 								: url.searchParams.get("closed") === "1" ||
 									url.searchParams.get("closed")?.toLowerCase() === "true",
-						limit:
-							Number.parseInt(url.searchParams.get("limit") ?? "100", 10) || 100
+						limit: parseLimit(url.searchParams.get("limit"))
 					})
 
 					return json({ count: threads.length, threads })

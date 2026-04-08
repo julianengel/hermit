@@ -125,6 +125,14 @@ const parseNonNegativeInt = (value: unknown, fallback: number): number => {
 	return Math.max(0, Math.trunc(value))
 }
 
+const clampQueryLimit = (value: number) => {
+	if (!Number.isFinite(value)) {
+		return 100
+	}
+
+	return Math.min(Math.max(Math.trunc(value), 1), 500)
+}
+
 export const normalizeEventPayload = (
 	payload: unknown
 ): NormalizedEvent | null => {
@@ -217,7 +225,7 @@ export const listEvents = async ({
 		.from(helperEvents)
 		.where(filters.length > 0 ? and(...filters) : undefined)
 		.orderBy(desc(helperEvents.eventTime))
-		.limit(Math.min(limit, 500))
+		.limit(clampQueryLimit(limit))
 }
 
 export const upsertTrackedThread = async (payload: ThreadUpsertPayload) => {
@@ -299,7 +307,7 @@ export const listTrackedThreads = async ({
 		.from(trackedThreads)
 		.where(filters.length > 0 ? and(...filters) : undefined)
 		.orderBy(sql`coalesce(${trackedThreads.lastChecked}, ${trackedThreads.createdAt}) asc`)
-		.limit(Math.min(limit, 500))
+		.limit(clampQueryLimit(limit))
 }
 
 export type { ThreadUpsertPayload }

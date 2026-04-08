@@ -41,6 +41,39 @@ const parseIntervalMs = () => {
 	return Math.round(intervalHours * 60 * 60 * 1000)
 }
 
+const getErrorStatus = (error: unknown) => {
+	if (!error || typeof error !== "object") {
+		return null
+	}
+
+	const status = Reflect.get(error, "status")
+	if (typeof status === "number") {
+		return status
+	}
+
+	const statusCode = Reflect.get(error, "statusCode")
+	if (typeof statusCode === "number") {
+		return statusCode
+	}
+
+	const response = Reflect.get(error, "response")
+	if (!response || typeof response !== "object") {
+		return null
+	}
+
+	const responseStatus = Reflect.get(response, "status")
+	if (typeof responseStatus === "number") {
+		return responseStatus
+	}
+
+	const responseStatusCode = Reflect.get(response, "statusCode")
+	if (typeof responseStatusCode === "number") {
+		return responseStatusCode
+	}
+
+	return null
+}
+
 const isThreadLikeChannel = (
 	channel: unknown
 ): channel is GuildThreadChannel<any, false> =>
@@ -89,11 +122,25 @@ const checkTrackedThread = async (
 	try {
 		channel = await client.fetchChannel(trackedThread.thread_id)
 	} catch (error) {
+		const status = getErrorStatus(error)
+		if (status === 404) {
+			await syncClosedThread(trackedThread, trackedThread.last_message_count)
+			return
+		}
+
 		console.error(
 			`Failed to fetch tracked thread ${trackedThread.thread_id} from Discord:`,
 			error
 		)
-		await syncClosedThread(trackedThread, trackedThread.last_message_count)
+		await upsertTrackedThread({
+			threadId: trackedThread.thread_id,
+			createdAt: trackedThread.created_at,
+			lastChecked: new Date().toISOString(),
+			solved: trackedThread.solved === 1,
+			warningLevel: trackedThread.warning_level,
+			closed: trackedThread.closed === 1,
+			lastMessageCount: trackedThread.last_message_count
+		})
 		return
 	}
 
